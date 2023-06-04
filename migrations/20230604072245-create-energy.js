@@ -19,7 +19,7 @@ module.exports = {
         type: Sequelize.STRING
       },
       capacity: {
-        type: Sequelize.INTEGER
+        type: Sequelize.FLOAT
       },
       created_at: {
         allowNull: false,

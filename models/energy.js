@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
     energyType: DataTypes.STRING,
     equipment: DataTypes.STRING,
     location: DataTypes.STRING,
-    capacity: DataTypes.INTEGER
+    capacity: DataTypes.FLOAT
   }, {
     sequelize,
     modelName: 'Energy',

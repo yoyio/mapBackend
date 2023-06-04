@@ -16,8 +16,8 @@ module.exports = (sequelize, DataTypes) => {
   }
   Crop.init({
     cropType: DataTypes.STRING,
-    area: DataTypes.INTEGER,
-    perOutput: DataTypes.INTEGER,
+    area: DataTypes.FLOAT,
+    perOutput: DataTypes.FLOAT,
     totalOutput: DataTypes.INTEGER
   }, {
     sequelize,

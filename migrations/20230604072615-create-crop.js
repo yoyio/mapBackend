@@ -13,10 +13,10 @@ module.exports = {
         type: Sequelize.STRING
       },
       area: {
-        type: Sequelize.INTEGER
+        type: Sequelize.FLOAT
       },
       per_output: {
-        type: Sequelize.INTEGER
+        type: Sequelize.FLOAT
       },
       total_output: {
         type: Sequelize.INTEGER
