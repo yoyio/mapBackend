@@ -1,9 +1,9 @@
 {
   "development": {
-    "username": "root",
-    "password": "root",
-    "database": "mapCms",
-    "host": "127.0.0.1",
+    "username": "admin",
+    "password": "password",
+    "database": "map",
+    "host": "database-2.ccponnmmp8kg.ap-northeast-1.rds.amazonaws.com",
     "dialect": "mysql"
   },
   "test": {
