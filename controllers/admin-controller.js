@@ -1,4 +1,4 @@
-const{Site,Energy,Crop}=require('../models')
+const{Site,Energy,Crop,Gas}=require('../models')
 
 const adminController={
   getSites:(req,res,next)=>{
@@ -10,11 +10,14 @@ const adminController={
     .catch(err=>next(err))    
   },
   postSite:async(req,res,next)=>{
-    const {name,address,energyType,equipment,location,capacity,cropType,area,perOutput,totalOput}=req.body
+    const {name,address,longitude,latitude,image,energyType,equipment,location,capacity,cropType,area,perOutput,totalOput,emissions,reduction}=req.body
     try{
       const createdSite=await Site.create({
       name,
-      address
+      address,
+      longitude,
+      latitude,
+      image
     })
     const createdEnergy=await Energy.create({
             energyType,
@@ -23,7 +26,7 @@ const adminController={
             capacity,
             siteId:createdSite.id
           })
-    const createdCrop=await  Crop.create({
+    const createdCrop=await Crop.create({
             cropType,
             area,
             perOutput,
@@ -31,7 +34,13 @@ const adminController={
             siteId:createdSite.id
           })
 
-     return res.json({status:'success',createdSite,createdEnergy,createdCrop})
+    const createdGas=await Gas.create({
+          emissions,
+          reduction,
+          siteId:createdSite.id
+    })
+
+     return res.json({status:'success',site:createdSite,energy:createdEnergy,crop:createdCrop,gas:createdGas})
     }catch(err){
       next(err)
     }
@@ -41,7 +50,7 @@ const adminController={
     Site.findByPk(siteId,{
       raw:true,
       nest:true,
-      include:[Energy,Crop]
+      include:[Energy,Crop,Gas]
     })
     .then(site=>res.json({status:'success',site}))
     .catch(err=>next(err))    
@@ -51,23 +60,27 @@ const adminController={
     Site.findByPk(siteId,{
       raw:true,
       nest:true,
-      include:[Energy,Crop]
+      include:[Energy,Crop,Gas]
     })
     .then(site=>res.json({status:'success',site}))
     .catch(err=>next(err))  
   },
   putSite:(req,res,next)=>{
     const siteId=req.params.id
-    const {name,address,energyType,equipment,location,capacity,cropType,area,perOutput,totalOput}=req.body
+    const {name,address,longitude,latitude,image,energyType,equipment,location,capacity,cropType,area,perOutput,totalOput,emissions,reduction}=req.body
     Promise.all([
     Site.findByPk(siteId),
     Energy.findOne({where:{siteId:siteId}}),
-    Crop.findOne({where:{siteId:siteId}})
+    Crop.findOne({where:{siteId:siteId}}),
+    Gas.findOne({where:{siteId:siteId}})
     ])
-    .then(([site,energy,crop])=>{
+    .then(([site,energy,crop,gas])=>{
        site.update({
         name,
-        address
+        address,
+        longitude,
+        latitude,
+        image
        })
        energy.update({
         energyType,
@@ -81,9 +94,13 @@ const adminController={
             perOutput,
             totalOput
        })
-       return [site,energy,crop]
+       gas.update({
+        emissions,
+        reduction
+       })
+       return [site,energy,crop,gas]
     })
-    .then(editedSite=>res.json({status:'success',editedSite}))
+    .then(editedSite=>res.json({status:'success',site:editedSite}))
     .catch(err=>next(err))  
   },
   deleteSite:(req,res,next)=>{
@@ -92,9 +109,10 @@ const adminController={
     .then(site=>{
       Energy.destroy({where:{siteId:siteId}})
       Crop.destroy({where:{siteId:siteId}})
+      Gas.destroy({where:{siteId:siteId}})
       return site.destroy()
     })
-    .then(deletedSite=>res.json({status:'success',deletedSite}))
+    .then(deletedSite=>res.json({status:'success',site:deletedSite}))
     .catch(err=>next(err))  
   }
 }
