@@ -1,4 +1,4 @@
-const{Site,Energy,Crop,Gas}=require('../models')
+const{Site,Energy,Crop,Gas,Company}=require('../models')
 
 const adminController={
   getSites:(req,res,next)=>{
@@ -10,14 +10,15 @@ const adminController={
     .catch(err=>next(err))    
   },
   postSite:async(req,res,next)=>{
-    const {name,address,longitude,latitude,image,energyType,equipment,location,capacity,cropType,area,perOutput,totalOput,emissions,reduction}=req.body
+    const {name,address,longitude,latitude,image,companyId,energyType,equipment,location,capacity,cropType,area,perOutput,totalOutput,emissions,reduction}=req.body
     try{
       const createdSite=await Site.create({
       name,
       address,
       longitude,
       latitude,
-      image
+      image,
+      companyId
     })
     const createdEnergy=await Energy.create({
             energyType,
@@ -30,7 +31,7 @@ const adminController={
             cropType,
             area,
             perOutput,
-            totalOput,
+            totalOutput,
             siteId:createdSite.id
           })
 
@@ -67,7 +68,7 @@ const adminController={
   },
   putSite:(req,res,next)=>{
     const siteId=req.params.id
-    const {name,address,longitude,latitude,image,energyType,equipment,location,capacity,cropType,area,perOutput,totalOput,emissions,reduction}=req.body
+    const {name,address,longitude,latitude,image,companyId,energyType,equipment,location,capacity,cropType,area,perOutput,totalOutput,emissions,reduction}=req.body
     Promise.all([
     Site.findByPk(siteId),
     Energy.findOne({where:{siteId:siteId}}),
@@ -80,7 +81,8 @@ const adminController={
         address,
         longitude,
         latitude,
-        image
+        image,
+        companyId
        })
        energy.update({
         energyType,
@@ -92,7 +94,7 @@ const adminController={
         cropType,
             area,
             perOutput,
-            totalOput
+            totalOutput
        })
        gas.update({
         emissions,
@@ -114,6 +116,39 @@ const adminController={
     })
     .then(deletedSite=>res.json({status:'success',site:deletedSite}))
     .catch(err=>next(err))  
+  },
+  getCompany:(req,res,next)=>{
+    Company.findAll({
+      raw:true,
+      nest:true
+    })
+    .then(company=>res.json({status:'success',company}))
+    .catch(err=>next(err))
+  },
+  editCompany:(req,res,next)=>{
+    const id=req.params.id
+    Company.findByPk(id,{
+      raw:true,
+      nest:true
+    })
+    .then(company=>res.json({status:'success',company}))
+    .catch(err=>next(err))
+  },
+  putCompany:(req,res,next)=>{
+    const {name,person,tel,email,address}=req.body
+    const id=req.params.id
+    Company.findByPk(id)
+    .then(company=>{
+     return  company.update({
+        name,
+        person,
+        tel,
+        email,
+        address
+      })
+    })
+    .then(editedcompany=>res.json({status:'success',company:editedcompany}))
+    .catch(err=>next(err))
   }
 }
 

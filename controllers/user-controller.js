@@ -5,10 +5,10 @@ const { User } = require('../models')
 const userController = {
   signUp: (req, res, next) => {
     const { name, email, password, confirmPassword } = req.body
-    if (password !== confirmPassword) throw new Error('Passwords do not match')
+    if (password !== confirmPassword) return res.json({ status: 'error', error:'Passwords do not match' })
     User.findOne({ where: { email } })
       .then(user => {
-        if (user) throw new Error('The email is already signed up')
+        if (user) return res.json({ status: 'error',error:'The email is already signed up'})
         return bcrypt.hash(password, 10)
       })
       .then(hash => {
