@@ -14,11 +14,15 @@ module.exports = (sequelize, DataTypes) => {
       Site.belongsTo(models.Company,{foreignKey:'companyId'})
       Site.hasMany(models.Energy,{foreignKey:'siteId'})
       Site.hasMany(models.Crop,{foreignKey:'siteId'})
+      Site.hasMany(models.Gas,{foreignKey:'siteId'})
     }
   }
   Site.init({
     name: DataTypes.STRING,
-    address: DataTypes.STRING
+    address: DataTypes.STRING,
+    longitude:DataTypes.FLOAT,
+    latitude:DataTypes.FLOAT,
+    image:DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Site',
